@@ -46,7 +46,7 @@ const HomeNavigator = createStackNavigator(
 );
 const ContactNavigator = createStackNavigator(
   {
-    Home: { screen: ContactPage },
+    Contact: { screen: ContactPage },
   },
   {
     defaultNavigationOptions: {
@@ -62,7 +62,7 @@ const ContactNavigator = createStackNavigator(
 );
 const AboutNavigator = createStackNavigator(
   {
-    Home: { screen: About },
+    About: { screen: About },
   },
   {
     defaultNavigationOptions: {
@@ -90,20 +90,17 @@ const MainNavigator = createDrawerNavigator(
 
 const AppNavigator = createAppContainer(MainNavigator);
 
-class Main extends Component {
-  render() {
-    return (
-      <View
-        style={{
-          flex: 1,
-          paddingTop:
-            Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight,
-        }}
-      >
-        <AppNavigator />
-      </View>
-    );
-  }
-}
+const Main = () => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight,
+      }}
+    >
+      <AppNavigator />
+    </View>
+  );
+};
 
 export default Main;

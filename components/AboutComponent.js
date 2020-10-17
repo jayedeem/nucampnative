@@ -1,15 +1,30 @@
 import React, { Component } from 'react';
-import { ScrollView, Text } from 'react-native';
-import { Card } from 'react-native-elements';
+import { ScrollView, Text, FlatList } from 'react-native';
+import { Card, ListItem } from 'react-native-elements';
+
+import { PARTNERS } from '../shared/partners';
 
 class About extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      partners: PARTNERS,
+    };
   }
   static navigationOptions = {
     title: 'About Us',
   };
   render() {
+    const renderPartner = ({ item }) => {
+      return (
+        <ListItem
+          title={item.name}
+          subtitle={item.description}
+          leftAvatar={{ source: require('./images/bootstrap-logo.png') }}
+        />
+      );
+    };
+
     return (
       <ScrollView>
         <Card title="Our Mission" Divider>
@@ -22,6 +37,13 @@ class About extends Component {
             to our standards. We also present a platform for campers to share
             reviews on campsites they have visited with each other.
           </Text>
+        </Card>
+        <Card title="Community Partners" Divider>
+          <FlatList
+            data={this.state.partners}
+            renderItem={renderPartner}
+            keyExtractor={(item) => item.id.toString()}
+          />
         </Card>
       </ScrollView>
     );
