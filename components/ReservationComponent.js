@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Animatable from 'react-native-animatable';
+import * as Notifications from 'expo-notifications';
 
 class Reservation extends Component {
   constructor(props) {
@@ -26,24 +27,16 @@ class Reservation extends Component {
   static navigationOptions = {
     title: 'Reserve Campsite',
   };
+  resetForm() {
+    this.setState({
+      campers: 1,
+      hikeIn: false,
+      date: new Date(),
+      showCalendar: false,
+      showModal: false,
+    });
+  }
   handleReservation() {
-    // Alert.alert(
-    //   'Begin Search?',
-    //   'Number of Campers: ' + this.state.campers,
-    //   'Hike-In?' + this.state.hikeIn,
-    //   'Date:' + this.state.date,
-    //   [
-    //     {
-    //       text: 'Cancel',
-    //       onPress: () => console.log('cancel'),
-    //       style: 'cancel',
-    //     },
-    //     {
-    //       text: 'OK',
-    //       onPress: () => console.log('ok pressed'),
-    //     },
-    //   ]
-    // );
     const date = this.state.date;
     const fixDate = `${
       date.getMonth() + 1
@@ -65,20 +58,45 @@ class Reservation extends Component {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        {
+          text: 'OK',
+          onPress: () => {
+            this.presentLocalNotification(
+              this.state.date.toLocaleDateString('en-US')
+            );
+            this.resetForm();
+          },
+        },
       ],
       { cancelable: false }
     );
   }
-  resetForm() {
-    this.setState({
-      campers: 1,
-      hikeIn: false,
-      date: new Date(),
-      showCalendar: false,
-      showModal: false,
-    });
+  async presentLocalNotification(date) {
+    function sendNotification() {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+        }),
+      });
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Your Campsite Reservation Search',
+          body: `Search for ${date} requested`,
+        },
+        trigger: null,
+      });
+    }
+
+    let permissions = await Notifications.getPermissionsAsync();
+    if (!permissions.granted) {
+      permissions = await Notifications.requestPermissionsAsync();
+    }
+    if (permissions.granted) {
+      sendNotification();
+    }
   }
+
   render() {
     return (
       <ScrollView>
