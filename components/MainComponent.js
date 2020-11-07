@@ -15,6 +15,7 @@ import {
   Alert,
   ToastAndroid,
 } from 'react-native';
+
 import { Icon } from 'react-native-elements';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
@@ -359,22 +360,25 @@ class Main extends Component {
     this.props.fetchComments();
     this.props.fetchPromotions();
     this.props.fetchPartners();
-    NetInfo.fetch().then((connectionInfo) => {
-      Platform.OS === 'ios'
-        ? Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
-        : ToastAndroid.show(
-            'Initial Network Connectivity Type: ' + connectionInfo.type,
-            ToastAndroid.LONG
-          );
-    });
-
-    this.unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
-      this.handleConnectivityChange(connectionInfo);
-    });
+    this.showNetInfo();
+    // this.unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
+    //   this.handleConnectivityChange(connectionInfo);
+    // });
   }
-  componentWillUnmount() {
-    this.unsubscribeNetInfo();
-  }
+  showNetInfo = async () => {
+    const connectionInfo = await NetInfo.fetch();
+    if (Platform.OS === 'ios') {
+      Alert.alert(`Initial Network Connectivity Type: ${connectionInfo.type}`);
+    } else {
+      ToastAndroid.show(
+        `Initial Network Connectivity Type: ${connectionInfo.type}`,
+        ToastAndroid.LONG
+      );
+    }
+  };
+  // componentWillUnmount() {
+  //   this.unsubscribeNetInfo();
+  // }
   handleConnectivityChange = (connectionInfo) => {
     let connectionMsg = 'You are now connected to an active network.';
     switch (connectionInfo.type) {
